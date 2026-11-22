@@ -487,8 +487,8 @@
         </div>
         <div style="display:flex; flex-direction:column; gap:10px;">
           <div>
-            <label class="form-label" style="font-size:11px; margin-bottom:4px;">Authorized Staff Name</label>
-            <input type="text" id="loginNameInput" class="form-input" style="font-size:14px; font-weight:700; padding:10px 14px;" placeholder="Enter Authorized Name" autocomplete="off">
+            <label class="form-label" style="font-size:11px; margin-bottom:4px;">Employee Full Name</label>
+            <input type="text" id="loginNameInput" class="form-input" style="font-size:14px; font-weight:700; padding:10px 14px;" placeholder="Enter Your Full Name" autocomplete="name">
           </div>
           <div>
             <label class="form-label" style="font-size:11px; margin-bottom:4px;">Date of Birth</label>
@@ -748,29 +748,17 @@
     }
 
     function resolveAuthorizedSpotlessStaff(rawName) {
-      const norm = normalizeSpotlessStaffName(rawName);
-      if (!norm) return null;
+      const trimmed = String(rawName || '').replace(/\s+/g, ' ').trim();
+      if (!trimmed || trimmed.length < 2) return null;
+      const norm = normalizeSpotlessStaffName(trimmed);
       if (norm === 'guy' || norm === 'guy c' || norm === 'guy chickering') {
         return 'Guy Chickering';
       }
-      if (
-        norm === 'jaquice' ||
-        norm === 'ja quice' ||
-        norm === 'jacquise' ||
-        norm === 'jaquise' ||
-        norm === 'ja quise' ||
-        norm.startsWith('jaquice ') ||
-        norm.startsWith('ja quice ') ||
-        norm.startsWith('jacquise ') ||
-        norm.startsWith('jaquise ') ||
-        norm.startsWith('ja quise ')
-      ) {
-        const trimmed = String(rawName || '').trim();
-        return (trimmed.toLowerCase() === 'jaquice' || trimmed.toLowerCase() === 'jacquise' || trimmed.toLowerCase() === 'jaquise')
-          ? "Ja'Quice"
-          : trimmed;
+      if (norm === 'jaquice' || norm === 'jacquise' || norm === 'jaquise') {
+        return "Ja'Quice";
       }
-      return null;
+      // Title-case any new employee's name cleanly (e.g. "maria lopez" -> "Maria Lopez")
+      return trimmed.replace(/\b\w/g, (c) => c.toUpperCase());
     }
 
     function isSessionAuthorized(sess) {
